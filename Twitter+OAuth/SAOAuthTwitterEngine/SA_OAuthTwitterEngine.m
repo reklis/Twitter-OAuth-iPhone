@@ -40,7 +40,7 @@
 @implementation SA_OAuthTwitterEngine
 
 @synthesize pin = _pin, requestTokenURL = _requestTokenURL, accessTokenURL = _accessTokenURL, authorizeURL = _authorizeURL;
-@synthesize consumerSecret = _consumerSecret, consumerKey = _consumerKey;
+@synthesize sa_consumerSecret = _sa_consumerSecret, sa_consumerKey = _sa_consumerKey;
 
 - (void) dealloc {
 	self.pin = nil;
@@ -48,7 +48,7 @@
 	self.requestTokenURL = nil;
 	self.accessTokenURL = nil;
 	
-	[_accessToken release];
+	[_sa_accessToken release];
 	[_requestToken release];
 	[_consumer release];
 	[super dealloc];
@@ -77,26 +77,26 @@
 - (OAConsumer *) consumer {
 	if (_consumer) return _consumer;
 	
-	NSAssert(self.consumerKey.length > 0 && self.consumerSecret.length > 0, @"You must first set your Consumer Key and Consumer Secret properties. Visit http://twitter.com/oauth_clients/new to obtain these.");
-	_consumer = [[OAConsumer alloc] initWithKey: self.consumerKey secret: self.consumerSecret];
+	NSAssert(self.sa_consumerKey.length > 0 && self.sa_consumerSecret.length > 0, @"You must first set your Consumer Key and Consumer Secret properties. Visit http://twitter.com/oauth_clients/new to obtain these.");
+	_consumer = [[OAConsumer alloc] initWithKey: self.sa_consumerKey secret: self.sa_consumerSecret];
 	return _consumer;
 }
 
 - (BOOL) isAuthorized {	
-	if (_accessToken.key && _accessToken.secret) return YES;
+	if (_sa_accessToken.key && _sa_accessToken.secret) return YES;
 	
 	//first, check for cached creds
 	NSString					*accessTokenString = [_delegate respondsToSelector: @selector(cachedTwitterOAuthDataForUsername:)] ? [(id) _delegate cachedTwitterOAuthDataForUsername: self.username] : @"";
 
 	if (accessTokenString.length) {				
-		[_accessToken release];
-		_accessToken = [[OAToken alloc] initWithHTTPResponseBody: accessTokenString];
+		[_sa_accessToken release];
+		_sa_accessToken = [[OAToken alloc] initWithHTTPResponseBody: accessTokenString];
 		[self setUsername: [self extractUsernameFromHTTPBody: accessTokenString] password: nil];
-		if (_accessToken.key && _accessToken.secret) return YES;
+		if (_sa_accessToken.key && _sa_accessToken.secret) return YES;
 	}
 	
-	[_accessToken release];										// no access token found.  create a new empty one
-	_accessToken = [[OAToken alloc] initWithKey: nil secret: nil];
+	[_sa_accessToken release];										// no access token found.  create a new empty one
+	_sa_accessToken = [[OAToken alloc] initWithKey: nil secret: nil];
 	return NO;
 }
 
@@ -125,8 +125,8 @@
 
 - (void) clearAccessToken {
 	if ([_delegate respondsToSelector: @selector(storeCachedTwitterOAuthData:forUsername:)]) [(id) _delegate storeCachedTwitterOAuthData: @"" forUsername: self.username];
-	[_accessToken release];
-	_accessToken = nil;
+	[_sa_accessToken release];
+	_sa_accessToken = nil;
 	[_consumer release];
 	_consumer = nil;
 	self.pin = nil;
@@ -138,7 +138,7 @@
 	[_pin autorelease];
 	_pin = [pin retain];
 	
-	_accessToken.pin = pin;
+	_sa_accessToken.pin = pin;
 	_requestToken.pin = pin;
 }
 
@@ -204,8 +204,8 @@
 		if ([_delegate respondsToSelector: @selector(storeCachedTwitterOAuthData:forUsername:)]) [(id) _delegate storeCachedTwitterOAuthData: dataString forUsername: username];
 	}
 	
-	[_accessToken release];
-	_accessToken = [[OAToken alloc] initWithHTTPResponseBody:dataString];
+	[_sa_accessToken release];
+	_sa_accessToken = [[OAToken alloc] initWithHTTPResponseBody:dataString];
 }
 
 
@@ -286,7 +286,7 @@
 	
 	OAMutableURLRequest *theRequest = [[[OAMutableURLRequest alloc] initWithURL:finalURL
 																	   consumer:self.consumer 
-																		  token:_accessToken 
+																		  token:_sa_accessToken 
 																		  realm: nil
 															  signatureProvider:nil] autorelease];
     if (method) {
