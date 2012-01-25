@@ -257,15 +257,11 @@
 {
     NSString *fullPath = path;
 
-	// --------------------------------------------------------------------------------
-	// modificaiton from the base clase
-	// the base class appends parameters here
-	// --------------------------------------------------------------------------------
-	//    if (params) {
-	//        fullPath = [self _queryStringWithBase:fullPath parameters:params prefixed:YES];
-	//    }
-	// --------------------------------------------------------------------------------
-
+    BOOL isGET = (!method || [method isEqualToString:@"GET"]);
+    if (params && isGET) {
+        fullPath = [self _queryStringWithBase:fullPath parameters:params prefixed:YES];
+    }
+    
     NSString *urlString = [NSString stringWithFormat:@"%@://%@/%@", 
                            (_secureConnection) ? @"https" : @"http",
                            _APIDomain, fullPath];

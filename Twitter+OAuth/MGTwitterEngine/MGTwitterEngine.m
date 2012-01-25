@@ -1152,6 +1152,10 @@
     [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
   }
   
+#if YAJL_AVAILABLE || TOUCHJSON_AVAILABLE
+    [params setObject:@"t" forKey:@"include_entities"];
+#endif
+    
   return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
                           requestType:MGTwitterHomeTimelineRequest 
                          responseType:MGTwitterStatuses];
@@ -1182,7 +1186,11 @@
     if (count > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
     }
-    
+
+#if YAJL_AVAILABLE || TOUCHJSON_AVAILABLE
+    [params setObject:@"t" forKey:@"include_entities"];
+#endif
+
     return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
                             requestType:MGTwitterFollowedTimelineRequest 
                            responseType:MGTwitterStatuses];
